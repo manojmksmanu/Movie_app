@@ -21,7 +21,7 @@ const saveState = async (state: any) => {
     const serializedState = JSON.stringify(state);
     await AsyncStorage.setItem('movieState', serializedState);
   } catch (err) {
-    // Handle errors here
+   
   }
 };
 

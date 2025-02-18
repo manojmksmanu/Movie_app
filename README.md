@@ -1,50 +1,161 @@
-# Welcome to your Expo app 👋
+# TMDB Movie App
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+A React Native mobile application built with Expo that allows users to browse movies, search for specific titles, and create a shortlist of favorites using The Movie Database (TMDB) API.
 
-## Get started
+## Features
 
-1. Install dependencies
+- Browse popular movies
+- Search movies by title
+- View detailed movie information
+- Shortlist favorite movies
+- Infinite scroll pagination
+- Responsive design for both mobile and web platforms
 
-   ```bash
-   npm install
-   ```
+## Prerequisites
 
-2. Start the app
+Before you begin, ensure you have the following installed:
+- [Node.js](https://nodejs.org/) (v14 or higher)
+- [npm](https://www.npmjs.com/) or [yarn](https://yarnpkg.com/)
+- [Expo CLI](https://docs.expo.dev/get-started/installation/)
+- [Git](https://git-scm.com/)
 
-   ```bash
-    npx expo start
-   ```
+## Installation
 
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
+1. Clone the repository:
 ```bash
-npm run reset-project
+git clone <repository-url>
+cd project
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+2. Install dependencies:
+```bash
+npm install
+# or
+yarn install
+```
 
-## Learn more
+3. Create a `.env` file in the root directory and add your TMDB API key:
+```env
+TMDB_API_KEY=your_api_key_here
+```
 
-To learn more about developing your project with Expo, look at the following resources:
+4. Start the development server:
+```bash
+npx expo start
+```
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+## Running the App
 
-## Join the community
+After starting the development server, you have several options to run the app:
 
-Join our community of developers creating universal apps.
+- **iOS Simulator**: Press `i` in the terminal
+- **Android Emulator**: Press `a` in the terminal
+- **Web Browser**: Press `w` in the terminal
+- **Physical Device**: Scan the QR code using the Expo Go app
+  - [Expo Go for iOS](https://apps.apple.com/app/expo-go/id982107779)
+  - [Expo Go for Android](https://play.google.com/store/apps/details?id=host.exp.exponent)
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+## Project Structure
+
+```
+project/
+├── app/
+│   └── (tabs)/
+│       ├── index.tsx       # Home screen with movie list
+│       └── shortlist.tsx   # Shortlisted movies screen
+├── components/
+│   └── MovieCard.tsx       # Reusable movie card component
+├── services/
+│   └── movieApi.ts         # API service functions
+├── store/
+│   ├── movieSlice.ts       # Redux slice for movies
+│   └── store.ts           # Redux store configuration
+└── types/
+    └── movie.ts           # TypeScript interfaces
+```
+
+## Built With
+
+- [Expo](https://expo.dev/)
+- [React Native](https://reactnative.dev/)
+- [TypeScript](https://www.typescriptlang.org/)
+- [Redux Toolkit](https://redux-toolkit.js.org/)
+- [React Query](https://tanstack.com/query/latest)
+- [TMDB API](https://www.themoviedb.org/documentation/api)
+
+## Getting a TMDB API Key
+
+1. Visit [TMDB Website](https://www.themoviedb.org/)
+2. Create an account or log in
+3. Go to Settings -> API
+4. Request an API key (choose "Developer" option)
+5. Fill in the required information
+6. Copy your API key and add it to the `.env` file
+
+## Available Scripts
+
+```bash
+# Start the development server
+npx expo start
+
+# Start with cleared cache
+npx expo start --clear
+
+# Run on iOS simulator
+npx expo run:ios
+
+# Run on Android emulator
+npx expo run:android
+
+# Run on web browser
+npx expo start:web
+```
+
+## Features in Detail
+
+### Home Screen
+- Browse popular movies
+- Search functionality with debounce
+- Infinite scroll for movie list
+- Responsive grid layout
+
+### Movie Details
+- View comprehensive movie information
+- See movie poster and backdrop
+- Check ratings and release date
+- Read movie overview
+
+### Shortlist Feature
+- Add/remove movies to shortlist
+- Persistent storage of shortlisted movies
+- Quick access to favorite movies
+
+## Troubleshooting
+
+Common issues and solutions:
+
+1. **Metro bundler issues**
+```bash
+# Clear metro cache
+npx expo start --clear
+```
+
+2. **Environment variables not working**
+- Ensure `.env` file is in root directory
+- Restart the development server
+
+3. **API Key issues**
+- Verify API key is correctly added to `.env`
+- Check if API key is active on TMDB dashboard
+
+## Contributing
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+## License
+
+This project is licensed under the MIT License.
