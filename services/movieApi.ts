@@ -9,6 +9,27 @@ const API_CONFIG = {
   },
 };
 
+export const fetchMoviesPageType = async ({
+  pageParam = 1,
+  showList = "now_playing", // Default to "now_playing"
+}: {
+  pageParam?: number;
+  showList?: string;
+}): Promise<FetchMoviesResponse> => {
+  try {
+    const url = `https://api.themoviedb.org/3/movie/${showList}?language=en-US&page=${pageParam}`;
+    const response = await axios.get<MovieApiResponse>(url, API_CONFIG);
+    return {
+      results: response.data.results,
+      nextPage: pageParam + 1,
+      totalPages: response.data.total_pages,
+    };
+  } catch (error) {
+    console.error("Error fetching movies:", error);
+    return { results: [], nextPage: undefined as any, totalPages: 0 };
+  }
+};
+
 export const fetchMoviesPage = async ({
   pageParam = 1,
 }): Promise<FetchMoviesResponse> => {

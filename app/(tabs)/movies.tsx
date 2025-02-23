@@ -6,6 +6,7 @@ import {
   ActivityIndicator,
   TextInput,
   Text,
+  TouchableOpacity,
 } from "react-native";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import MovieCard from "../../components/MovieCard";
@@ -14,15 +15,27 @@ import { Ionicons } from "@expo/vector-icons";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../store/store";
 import { toggleShortlist } from "../../store/movieSlice";
-import { fetchMoviesPage, searchMovies } from "../../services/movieApi";
+import {
+  fetchMoviesPage,
+  fetchMoviesPageType,
+  searchMovies,
+} from "../../services/movieApi";
 
 // Memoized MovieCard wrapper to prevent unnecessary re-renders
-const MemoizedMovieCard = memo(MovieCard, (prevProps:any, nextProps:any) => {
+const MemoizedMovieCard = memo(MovieCard, (prevProps: any, nextProps: any) => {
   return (
     prevProps.movie.id === nextProps.movie.id &&
     prevProps.isShortlisted === nextProps.isShortlisted
   );
 });
+
+// Movie list options
+const List = [
+  { name: "Now Playing", listname: "now_playing" },
+  { name: "Popular", listname: "popular" },
+  { name: "Top Rated", listname: "top_rated" },
+  { name: "Upcoming", listname: "upcoming" },
+];
 
 export default function MoviesScreen() {
   const dispatch = useDispatch();
@@ -31,6 +44,7 @@ export default function MoviesScreen() {
   );
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedQuery, setDebouncedQuery] = useState("");
+  const [selectedList, setSelectedList] = useState(List[0].listname); // Default to "now_playing"
   const flatListRef = useRef<FlatList>(null);
 
   // Optimized debounce with useCallback
@@ -48,11 +62,11 @@ export default function MoviesScreen() {
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
     useInfiniteQuery({
-      queryKey: ["movies", debouncedQuery],
+      queryKey: ["movies", debouncedQuery, selectedList], // Include selectedList in queryKey
       queryFn: ({ pageParam = 1 }) =>
         debouncedQuery
           ? searchMovies(debouncedQuery, pageParam)
-          : fetchMoviesPage({ pageParam }),
+          : fetchMoviesPageType({ pageParam, showList: selectedList }), // Pass selectedList
       getNextPageParam: (lastPage) =>
         lastPage.nextPage <= lastPage.totalPages
           ? lastPage.nextPage
@@ -95,16 +109,33 @@ export default function MoviesScreen() {
 
   const ListEmpty = useCallback(
     () =>
-      debouncedQuery && !isLoading && !movies.length ? (
+      !isLoading && !movies.length ? (
         <View style={styles.emptyContainer}>
-          <Text style={styles.emptyText}>No movies found</Text>
+          <Text style={styles.emptyText}>
+            {debouncedQuery ? "No movies found" : "No movies available"}
+          </Text>
         </View>
       ) : null,
     [debouncedQuery, isLoading, movies.length]
   );
 
+  // Toggle list handler
+  const handleListToggle = (listname: string) => {
+    setSelectedList(listname);
+    flatListRef.current?.scrollToOffset({ offset: 0, animated: false }); // Reset scroll
+  };
+
   return (
     <View style={styles.container}>
+      {/* Full-screen Loading Indicator */}
+      {isLoading && (
+        <View style={styles.loadingOverlay}>
+          <ActivityIndicator size="large" color="#e21221" />
+          <Text style={styles.loadingText}>Loading Movies...</Text>
+        </View>
+      )}
+
+      {/* Search Bar */}
       <View style={styles.searchContainer}>
         <Ionicons
           name="search"
@@ -121,15 +152,33 @@ export default function MoviesScreen() {
           autoCapitalize="none"
           returnKeyType="search"
         />
-        {isLoading && debouncedQuery && (
-          <ActivityIndicator
-            size="small"
-            color="#e21221"
-            style={styles.searchLoader}
-          />
-        )}
       </View>
 
+      {/* Toggle Buttons */}
+      <View style={styles.toggleContainer}>
+        {List.map((item) => (
+          <TouchableOpacity
+            key={item.listname}
+            style={[
+              styles.toggleButton,
+              selectedList === item.listname && styles.toggleButtonActive,
+            ]}
+            onPress={() => handleListToggle(item.listname)}
+            disabled={isLoading} // Disable buttons during loading
+          >
+            <Text
+              style={[
+                styles.toggleText,
+                selectedList === item.listname && styles.toggleTextActive,
+              ]}
+            >
+              {item.name}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </View>
+
+      {/* Movie List */}
       <FlatList
         ref={flatListRef}
         data={movies}
@@ -171,14 +220,35 @@ const styles = StyleSheet.create({
   searchIcon: {
     marginRight: 8,
   },
-  searchLoader: {
-    marginLeft: 8,
-  },
   searchInput: {
     flex: 1,
     height: 40,
     color: "#ffffff",
     fontSize: 16,
+  },
+  toggleContainer: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    marginVertical: 10,
+    marginHorizontal: 16,
+    gap: 5,
+  },
+  toggleButton: {
+    paddingVertical: 8,
+    paddingHorizontal: 8,
+    borderRadius: 10,
+    backgroundColor: "#2a2a2a",
+  },
+  toggleButtonActive: {
+    backgroundColor: "#e21221",
+  },
+  toggleText: {
+    color: "#ffffff",
+    fontSize: 14,
+    fontWeight: "600",
+  },
+  toggleTextActive: {
+    color: "#ffffff",
   },
   columnWrapper: {
     justifyContent: "space-between",
@@ -204,5 +274,17 @@ const styles = StyleSheet.create({
     color: "#ffffff",
     fontSize: 16,
     textAlign: "center",
+  },
+  loadingOverlay: {
+    ...StyleSheet.absoluteFillObject, // Full-screen overlay
+    backgroundColor: "rgba(0, 0, 0, 0.7)",
+    justifyContent: "center",
+    alignItems: "center",
+    zIndex: 10, // On top of everything
+  },
+  loadingText: {
+    color: "#ffffff",
+    fontSize: 16,
+    marginTop: 10,
   },
 });
