@@ -30,6 +30,28 @@ export const fetchMoviesPageType = async ({
   }
 };
 
+export const fetchTVSeriesPage = async ({
+  pageParam = 1,
+  showList = "airing_today", // Default to "airing_today"
+}: {
+  pageParam?: number;
+  showList?: string;
+}): Promise<FetchMoviesResponse> => {
+  try {
+    const url = `https://api.themoviedb.org/3/tv/${showList}?language=en-US&page=${pageParam}`;
+    const response = await axios.get<MovieApiResponse>(url, API_CONFIG);
+    return {
+      results: response.data.results,
+      nextPage: pageParam + 1,
+      totalPages: response.data.total_pages,
+    };
+  } catch (error) {
+    console.error("Error fetching TV series:", error);
+    return { results: [], nextPage: undefined as any, totalPages: 0 };
+  }
+};
+
+
 export const fetchMoviesPage = async ({
   pageParam = 1,
 }): Promise<FetchMoviesResponse> => {

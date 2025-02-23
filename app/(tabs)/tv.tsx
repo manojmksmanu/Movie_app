@@ -9,17 +9,13 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import MovieCard from "../../components/MovieCard";
-import { Movie } from "../../types/movie";
+import MovieCard from "../../components/MovieCard"; // Reuse MovieCard (assuming it works for TV series)
+import { Movie } from "../../types/movie"; // Adjust if TV series needs a different type
 import { Ionicons } from "@expo/vector-icons";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../store/store";
 import { toggleShortlist } from "../../store/movieSlice";
-import {
-  fetchMoviesPage,
-  fetchMoviesPageType,
-  searchMovies,
-} from "../../services/movieApi";
+import { fetchTVSeriesPage, searchMovies } from "../../services/movieApi"; // Import fetchTVSeriesPage
 
 // Memoized MovieCard wrapper to prevent unnecessary re-renders
 const MemoizedMovieCard = memo(MovieCard, (prevProps: any, nextProps: any) => {
@@ -29,22 +25,22 @@ const MemoizedMovieCard = memo(MovieCard, (prevProps: any, nextProps: any) => {
   );
 });
 
-// Movie list options
+// TV series list options
 const List = [
-  { name: "Now Playing", listname: "now_playing" },
+  { name: "Airing Today", listname: "airing_today" },
+  { name: "On The Air", listname: "on_the_air" },
   { name: "Popular", listname: "popular" },
   { name: "Top Rated", listname: "top_rated" },
-  { name: "Upcoming", listname: "upcoming" },
 ];
 
-export default function MoviesScreen() {
+export default function TVSeriesScreen() {
   const dispatch = useDispatch();
   const shortlistedMovies = useSelector(
     (state: RootState) => state.movies.shortlistedMovies
-  );
+  ); // Assuming shortlist works for TV series too
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedQuery, setDebouncedQuery] = useState("");
-  const [selectedList, setSelectedList] = useState(List[0].listname); // Default to "now_playing"
+  const [selectedList, setSelectedList] = useState(List[0].listname); // Default to "airing_today"
   const flatListRef = useRef<FlatList>(null);
 
   // Optimized debounce with useCallback
@@ -62,11 +58,11 @@ export default function MoviesScreen() {
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
     useInfiniteQuery({
-      queryKey: ["movies", debouncedQuery, selectedList], // Include selectedList in queryKey
+      queryKey: ["tvseries", debouncedQuery, selectedList], // Unique key for TV series
       queryFn: ({ pageParam = 1 }) =>
         debouncedQuery
-          ? searchMovies(debouncedQuery, pageParam)
-          : fetchMoviesPageType({ pageParam, showList: selectedList }), // Pass selectedList
+          ? searchMovies(debouncedQuery, pageParam) // Reuse movie search (adjust if needed)
+          : fetchTVSeriesPage({ pageParam, showList: selectedList }), // Fetch TV series
       getNextPageParam: (lastPage) =>
         lastPage.nextPage <= lastPage.totalPages
           ? lastPage.nextPage
@@ -76,7 +72,7 @@ export default function MoviesScreen() {
       initialPageParam: 1,
     });
 
-  const movies = data?.pages.flatMap((page) => page.results) ?? [];
+  const series = data?.pages.flatMap((page) => page.results) ?? [];
 
   const handleLoadMore = useCallback(() => {
     if (hasNextPage && !isFetchingNextPage) {
@@ -84,10 +80,10 @@ export default function MoviesScreen() {
     }
   }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
-  const renderMovie = useCallback(
+  const renderSeries = useCallback(
     ({ item }: { item: Movie }) => (
       <MemoizedMovieCard
-        movie={item}
+        movie={item} // Assuming MovieCard works with TV series data
         isShortlisted={shortlistedMovies.some((m) => m.id === item.id)}
         onShortlist={() => dispatch(toggleShortlist(item))}
       />
@@ -109,14 +105,14 @@ export default function MoviesScreen() {
 
   const ListEmpty = useCallback(
     () =>
-      !isLoading && !movies.length ? (
+      !isLoading && !series.length ? (
         <View style={styles.emptyContainer}>
           <Text style={styles.emptyText}>
-            {debouncedQuery ? "No movies found" : "No movies available"}
+            {debouncedQuery ? "No series found" : "No series available"}
           </Text>
         </View>
       ) : null,
-    [debouncedQuery, isLoading, movies.length]
+    [debouncedQuery, isLoading, series.length]
   );
 
   // Toggle list handler
@@ -131,7 +127,7 @@ export default function MoviesScreen() {
       {isLoading && (
         <View style={styles.loadingOverlay}>
           <ActivityIndicator size="large" color="#e21221" />
-          <Text style={styles.loadingText}>Loading Movies...</Text>
+          <Text style={styles.loadingText}>Loading Series...</Text>
         </View>
       )}
 
@@ -145,7 +141,7 @@ export default function MoviesScreen() {
         />
         <TextInput
           style={styles.searchInput}
-          placeholder="Search movies..."
+          placeholder="Search TV series..."
           placeholderTextColor="#999"
           value={searchQuery}
           onChangeText={setSearchQuery}
@@ -164,7 +160,7 @@ export default function MoviesScreen() {
               selectedList === item.listname && styles.toggleButtonActive,
             ]}
             onPress={() => handleListToggle(item.listname)}
-            disabled={isLoading} // Disable buttons during loading
+            disabled={isLoading}
           >
             <Text
               style={[
@@ -178,17 +174,17 @@ export default function MoviesScreen() {
         ))}
       </View>
 
-      {/* Movie List */}
+      {/* Series List */}
       <FlatList
         ref={flatListRef}
-        data={movies}
-        renderItem={renderMovie}
+        data={series}
+        renderItem={renderSeries}
         keyExtractor={(item) => item.id.toString()}
         numColumns={2}
         columnWrapperStyle={styles.columnWrapper}
         contentContainerStyle={[
           styles.listContent,
-          movies.length === 0 && styles.listContentEmpty,
+          series.length === 0 && styles.listContentEmpty,
         ]}
         onEndReached={handleLoadMore}
         onEndReachedThreshold={0.3}
@@ -231,12 +227,11 @@ const styles = StyleSheet.create({
     justifyContent: "space-around",
     marginVertical: 10,
     marginHorizontal: 16,
-    gap: 5,
   },
   toggleButton: {
     paddingVertical: 8,
-    paddingHorizontal: 8,
-    borderRadius: 10,
+    paddingHorizontal: 16,
+    borderRadius: 20,
     backgroundColor: "#2a2a2a",
   },
   toggleButtonActive: {
@@ -276,11 +271,11 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   loadingOverlay: {
-    ...StyleSheet.absoluteFillObject, // Full-screen overlay
+    ...StyleSheet.absoluteFillObject,
     backgroundColor: "rgba(0, 0, 0, 0.7)",
     justifyContent: "center",
     alignItems: "center",
-    zIndex: 10, // On top of everything
+    zIndex: 10,
   },
   loadingText: {
     color: "#ffffff",
