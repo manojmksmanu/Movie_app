@@ -3,21 +3,21 @@ import React from 'react'
 import { useTrendingMovies } from '@/services/homeApi';
 import TrendingMoviesCarousel from '@/components/HomeTrendingMoviesCarousel';
 import Movie from '@/components/HomeTrendingMovies';
+import Shows from '@/components/HomeTrendingShows';
 
 const index = () => {
     const { data, isLoading, error } = useTrendingMovies();
 
 
   return (
-    <ScrollView>
-      <TrendingMoviesCarousel/>
-      <Movie/>
+    <ScrollView style={{ backgroundColor: "#1A1A1A" }}>
+      <TrendingMoviesCarousel />
+      <Movie />
+      <Shows />
       {/* <Text>index</Text> */}
-      <View style={{height:30}}>
-
-      </View>
+      <View style={{ height: 70 }}></View>
     </ScrollView>
-  )
+  );
 }
 
 export default index

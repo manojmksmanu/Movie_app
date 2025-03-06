@@ -8,14 +8,14 @@ import {
   FlatList,
 } from "react-native";
 import { Dimensions } from "react-native";
-import { useTrendingMoviesByDays } from "@/services/homeApi";
+import { useTrendingMoviesByDays, useTrendingTvByDays } from "@/services/homeApi";
 import { LinearGradient } from "expo-linear-gradient";
 
 const { width, height } = Dimensions.get("window");
 
-const Movie = () => {
+const Shows = () => {
   const [dayWeek, setDayWeek] = useState("day");
-  const { data: movies, isLoading, error } = useTrendingMoviesByDays(dayWeek);
+  const { data: movies, isLoading, error } = useTrendingTvByDays(dayWeek);
 
   // Card settings
   const cardWidth = width * 0.40;
@@ -33,7 +33,7 @@ const Movie = () => {
     <View style={styles.container}>
       {/* Header Section */}
       <View style={styles.header}>
-        <Text style={styles.title}>Trending Movies</Text>
+        <Text style={styles.title}>Trending Shows</Text>
         <View style={styles.toggleContainer}>
           {["day", "week"].map((period) => (
             <TouchableOpacity
@@ -105,7 +105,7 @@ const Movie = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-
+  
     paddingTop: 20,
   },
   // Header Styles
@@ -232,4 +232,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Movie;
+export default Shows;

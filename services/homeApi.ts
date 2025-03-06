@@ -33,7 +33,7 @@ export const useTrendingMovies = () => {
 const fetchTrendingMoviesByDays = async ({ queryKey }) => {
   try {
     const [, dayWeek] = queryKey; // Query key se `dayWeek` extract karenge
-    const url = `https://api.themoviedb.org/3/trending/all/${dayWeek}?language=en-US`;
+    const url = `https://api.themoviedb.org/3/trending/movie/${dayWeek}?language=en-US`;
     const response = await axios.get(url, API_CONFIG);
     return response.data.results;
   } catch (error:any) {
@@ -49,5 +49,26 @@ export const useTrendingMoviesByDays = (dayWeek:any) => {
   return useQuery({
     queryKey: ["trendingMoviesByDays", dayWeek], // Query key dynamic hai
     queryFn: fetchTrendingMoviesByDays,
+  });
+};
+const fetchTrendingTvByDays = async ({ queryKey }) => {
+  try {
+    const [, dayWeek] = queryKey; // Query key se `dayWeek` extract karenge
+    const url = `https://api.themoviedb.org/3/trending/tv/${dayWeek}?language=en-US`;
+    const response = await axios.get(url, API_CONFIG);
+    return response.data.results;
+  } catch (error:any) {
+    console.error(
+      "Error fetching trending movies:",
+      error.response?.data || error.message
+    );
+    throw error; // React Query error handle karega
+  }
+};
+
+export const useTrendingTvByDays = (dayWeek:any) => {
+  return useQuery({
+    queryKey: ["trendingTvByDays", dayWeek], // Query key dynamic hai
+    queryFn: fetchTrendingTvByDays,
   });
 };
