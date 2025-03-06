@@ -1,4 +1,4 @@
-package com.manojku.movie_assignment
+package com.manojku.movie_App
 
 import android.app.Application
 import android.content.res.Configuration

@@ -43,9 +43,12 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#121212',
+    display:'flex',
+    justifyContent:'center',
+    flexDirection:'row',
   },
   columnWrapper: {
-    justifyContent: 'space-evenly',
+    justifyContent: 'space-between',
   },
   listContent: {
     padding: 16,

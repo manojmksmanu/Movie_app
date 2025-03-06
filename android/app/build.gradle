@@ -86,9 +86,9 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
 
-    namespace 'com.manojku.movie_assignment'
+    namespace 'com.manojku.movie_App'
     defaultConfig {
-        applicationId 'com.manojku.movie_assignment'
+        applicationId 'com.manojku.movie_App'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

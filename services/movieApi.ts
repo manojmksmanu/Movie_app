@@ -52,6 +52,55 @@ export const fetchTVSeriesPage = async ({
 };
 
 
+// Fetch movie details
+export const fetchMovieDetails = async (id) => {
+  try {
+    const url = `https://api.themoviedb.org/3/movie/${id}?language=en-US`;
+    const response = await axios.get(url, API_CONFIG);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching movie details:", error);
+    return null;
+  }
+};
+
+// Fetch movie cast
+export const fetchMovieCast = async (id) => {
+  try {
+    const url = `https://api.themoviedb.org/3/movie/${id}/credits?language=en-US`;
+    const response = await axios.get(url, API_CONFIG);
+    return response.data.cast.slice(0, 10); // Top 10 cast members
+  } catch (error) {
+    console.error("Error fetching cast:", error);
+    return [];
+  }
+};
+
+// Fetch movie videos (trailers)
+export const fetchMovieVideos = async (id) => {
+  try {
+    const url = `https://api.themoviedb.org/3/movie/${id}/videos?language=en-US`;
+    const response = await axios.get(url, API_CONFIG);
+    return response.data.results.filter((video) => video.site === "YouTube" && video.type === "Trailer");
+  } catch (error) {
+    console.error("Error fetching videos:", error);
+    return [];
+  }
+};
+
+// Fetch movie recommendations
+export const fetchMovieRecommendations = async (id) => {
+  try {
+    const url = `https://api.themoviedb.org/3/movie/${id}/recommendations?language=en-US&page=1`;
+    const response = await axios.get(url, API_CONFIG);
+    return response.data.results.slice(0, 10); // Top 10 recommendations
+  } catch (error) {
+    console.error("Error fetching recommendations:", error);
+    return [];
+  }
+};
+
+
 export const fetchMoviesPage = async ({
   pageParam = 1,
 }): Promise<FetchMoviesResponse> => {

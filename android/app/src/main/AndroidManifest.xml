@@ -25,7 +25,7 @@
         <category android:name="android.intent.category.DEFAULT"/>
         <category android:name="android.intent.category.BROWSABLE"/>
         <data android:scheme="myapp"/>
-        <data android:scheme="com.manojku.movie_assignment"/>
+        <data android:scheme="com.manojku.movie_App"/>
       </intent-filter>
     </activity>
   </application>

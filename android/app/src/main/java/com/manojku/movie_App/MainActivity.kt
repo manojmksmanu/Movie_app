@@ -1,4 +1,4 @@
-package com.manojku.movie_assignment
+package com.manojku.movie_App
 import expo.modules.splashscreen.SplashScreenManager
 
 import android.os.Build

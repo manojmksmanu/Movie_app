@@ -251,7 +251,7 @@ const styles = StyleSheet.create({
     color: "#ffffff",
   },
   columnWrapper: {
-    justifyContent: "space-between",
+    justifyContent: "space-evenly",
     paddingHorizontal: 8,
   },
   listContent: {

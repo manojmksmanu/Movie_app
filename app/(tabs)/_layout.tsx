@@ -24,6 +24,8 @@ export default function TabLayout() {
           shadowOffset: { width: 0, height: 0 },
           shadowOpacity: 0.3,
           shadowRadius: 10,
+          marginHorizontal:20,
+          
         },
         tabBarActiveTintColor: "#e21221",
         tabBarInactiveTintColor: "#666666",
@@ -112,6 +114,7 @@ export default function TabLayout() {
       />
       <Tabs.Screen
         name="tv"
+        
         options={{
           title: "TV",
           tabBarIcon: ({ size, color, focused }) => (
