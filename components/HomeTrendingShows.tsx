@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -13,10 +13,13 @@ import { LinearGradient } from "expo-linear-gradient";
 
 const { width, height } = Dimensions.get("window");
 
-const Shows = () => {
+const Shows = ({setLoading}) => {
   const [dayWeek, setDayWeek] = useState("day");
   const { data: movies, isLoading, error } = useTrendingTvByDays(dayWeek);
 
+    useEffect(() => {
+      setLoading(isLoading);
+    }, [isLoading]);
   // Card settings
   const cardWidth = width * 0.40;
 

@@ -1,5 +1,5 @@
 import { useTrendingMovies } from "@/services/homeApi";
-import React from "react";
+import React, { useEffect } from "react";
 import {
   View,
   Image,
@@ -15,8 +15,12 @@ import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 
 const { width, height } = Dimensions.get("window");
 
-const TrendingMoviesCarousel = () => {
+const TrendingMoviesCarousel = ({ setLoading }) => {
   const { data, isLoading, error } = useTrendingMovies();
+
+  useEffect(() => {
+    setLoading(isLoading);
+  }, [isLoading]);
 
   if (isLoading) return <Text style={styles.loading}>Loading...</Text>;
   if (error) return <Text style={styles.error}>Error: {error.message}</Text>;
