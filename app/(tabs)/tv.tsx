@@ -16,6 +16,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../store/store";
 import { toggleShortlist } from "../../store/movieSlice";
 import { fetchTVSeriesPage, searchMovies } from "../../services/movieApi"; // Import fetchTVSeriesPage
+import LottieView from "lottie-react-native";
 
 // Memoized MovieCard wrapper to prevent unnecessary re-renders
 const MemoizedMovieCard = memo(MovieCard, (prevProps: any, nextProps: any) => {
@@ -126,8 +127,12 @@ export default function TVSeriesScreen() {
       {/* Full-screen Loading Indicator */}
       {isLoading && (
         <View style={styles.loadingOverlay}>
-          <ActivityIndicator size="large" color="#e21221" />
-          <Text style={styles.loadingText}>Loading Series...</Text>
+          <LottieView
+            source={require("../../assets/lottie/Loading.json")}
+            autoPlay
+            loop
+            style={{ width: 200, height: 200 }}
+          />
         </View>
       )}
 
