@@ -49,12 +49,14 @@ const TrendingMoviesCarousel = ({ setLoading }) => {
                 }}
                 style={styles.image}
               />
-              {/* Gradient Overlay */}
-              <LinearGradient
-                colors={["transparent", "rgba(247, 27, 27, 0.9)"]}
+
+              {/* Gradient Overlay - Should be between image and content */}
+              <View
+             
                 style={styles.overlay}
               />
-              {/* Movie Details */}
+
+              {/* Movie Details - Now separate from the gradient */}
               <View style={styles.infoContainer}>
                 <Text style={styles.title}>{item.title || item.name}</Text>
                 <View style={styles.row}>
@@ -98,16 +100,19 @@ const styles = StyleSheet.create({
     height: "100%",
   },
   overlay: {
-    position: "absolute",
-    width: "100%",
-    height: "100%",
-    bottom: 0,
+    // position: "absolute",
+    // bottom: 0,
+    // right: 0,
+    // left: 0,
+    // borderTopLeftRadius: 30,
+    backgroundColor:'red'
   },
   infoContainer: {
     position: "absolute",
     bottom: 30,
     left: 20,
     right: 20,
+    zIndex: 2, // Ensure content appears above gradient
   },
   title: {
     color: "#fff",

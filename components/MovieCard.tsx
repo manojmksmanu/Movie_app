@@ -65,11 +65,13 @@ export default function MovieCard({ movie }: MovieCardProps) {
           />
         </Pressable>
         <LinearGradient
-          colors={["transparent", "rgba(150, 0, 0, 1)", "rgba(247, 27, 27, 1)"]}
+          colors={["rgba(150, 0, 0, 0.9)", "rgba(247, 27, 27, 0.7)"]}
+          start={{ x: 0.2, y: 0.5 }}
+          end={{ x: 0.1, y: 0.1 }}
           style={styles.content}
         >
           <Text style={styles.title} numberOfLines={2}>
-            {movie.title}
+             {movie.title ? movie.title : movie.name}
           </Text>
           <View style={styles.bottomRow}>
             <Text style={styles.rating}>★ {movie.vote_average.toFixed(1)}</Text>
@@ -118,8 +120,8 @@ const styles = StyleSheet.create({
     bottom: 0,
     right: 0,
     left: 0,
+    borderTopLeftRadius:30,
     justifyContent: "space-between",
-    // Removed backgroundColor since we're using gradient
   },
   title: {
     fontSize: 16,
