@@ -16,14 +16,11 @@ import { RootState } from "../store/store";
 import { useRouter } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
 
-interface MovieCardProps {
-  movie: Movie;
-}
 
 const { width } = Dimensions.get("window");
 const CARD_WIDTH = width / 2 - 24;
 
-export default function MovieCard({ movie }: MovieCardProps) {
+export default function MovieCard({ movie }: any) {
   const dispatch = useDispatch();
   const shortlistedMovies = useSelector(
     (state: RootState) => state.movies.shortlistedMovies
@@ -71,7 +68,7 @@ export default function MovieCard({ movie }: MovieCardProps) {
           style={styles.content}
         >
           <Text style={styles.title} numberOfLines={2}>
-             {movie.title ? movie.title : movie.name}
+             {movie?.title ? movie?.title : movie?.name}
           </Text>
           <View style={styles.bottomRow}>
             <Text style={styles.rating}>★ {movie.vote_average.toFixed(1)}</Text>
