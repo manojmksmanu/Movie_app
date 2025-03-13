@@ -7,6 +7,7 @@ import {
   TextInput,
   Text,
   TouchableOpacity,
+  Dimensions,
 } from "react-native";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import MovieCard from "../../components/MovieCard";
@@ -22,9 +23,7 @@ import {
 } from "../../services/movieApi";
 import LottieView from "lottie-react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-
-
-
+import SkeletonPlaceholder from "react-native-skeleton-placeholder";
 
 // Memoized MovieCard wrapper to prevent unnecessary re-renders
 const MemoizedMovieCard = memo(MovieCard, (prevProps: any, nextProps: any) => {
@@ -41,6 +40,9 @@ const List = [
   { name: "Top Rated", listname: "top_rated" },
   { name: "Upcoming", listname: "upcoming" },
 ];
+
+const { width } = Dimensions.get("window");
+const CARD_WIDTH = width / 2 - 24;
 
 export default function MoviesScreen() {
   const dispatch = useDispatch();
@@ -81,7 +83,7 @@ export default function MoviesScreen() {
       initialPageParam: 1,
     });
 
-  const movies = data?.pages.flatMap((page) => page.results) ?? [];
+  const movies = data?.pages.flatMap((page:any) => page.results) ?? [];
 
   const handleLoadMore = useCallback(() => {
     if (hasNextPage && !isFetchingNextPage) {
@@ -89,15 +91,40 @@ export default function MoviesScreen() {
     }
   }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
+  // Simple movie skeleton component
+  const MovieSkeletonItem = () => (
+    <View style={{ marginBottom: 8 }}>
+      <SkeletonPlaceholder
+        borderRadius={4}
+        backgroundColor="#461616"
+        highlightColor="#ff0000"
+      >
+        <SkeletonPlaceholder.Item>
+          <SkeletonPlaceholder.Item
+            width={CARD_WIDTH}
+            height={CARD_WIDTH * 1.4}
+            borderRadius={10}
+          />
+        </SkeletonPlaceholder.Item>
+      </SkeletonPlaceholder>
+    </View>
+  );
+
   const renderMovie = useCallback(
-    ({ item }: { item: Movie }) => (
-      <MemoizedMovieCard
-        movie={item}
-        isShortlisted={shortlistedMovies.some((m) => m.id === item.id)}
-        onShortlist={() => dispatch(toggleShortlist(item))}
-      />
-    ),
-    [shortlistedMovies, dispatch]
+    ({ item, index }: { item: Movie; index: number }) => {
+      if (isLoading) {
+        return <MovieSkeletonItem />;
+      }
+
+      return (
+        <MemoizedMovieCard
+          movie={item}
+          isShortlisted={shortlistedMovies.some((m) => m.id === item.id)}
+          onShortlist={() => dispatch(toggleShortlist(item))}
+        />
+      );
+    },
+    [shortlistedMovies, dispatch, isLoading]
   );
 
   const ListFooter = useCallback(
@@ -125,25 +152,13 @@ export default function MoviesScreen() {
   );
 
   // Toggle list handler
-  const handleListToggle = (listname: string) => {
+  const handleListToggle = useCallback((listname: string) => {
     setSelectedList(listname);
     flatListRef.current?.scrollToOffset({ offset: 0, animated: false }); // Reset scroll
-  };
+  }, []);
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* Full-screen Loading Indicator */}
-      {isLoading && (
-        <View style={styles.loadingOverlay}>
-            <LottieView
-                      source={require("../../assets/lottie/Loading.json")}
-                      autoPlay
-                      loop
-                      style={{ width: 200, height: 200 }}
-                    />
-        </View>
-      )}
-
       {/* Search Bar */}
       <View style={styles.searchContainer}>
         <Ionicons
@@ -163,7 +178,7 @@ export default function MoviesScreen() {
         />
       </View>
 
-      {/* Toggle Buttons */}
+      {/* Fixed Toggle Buttons */}
       <View style={styles.toggleContainer}>
         {List.map((item) => (
           <TouchableOpacity
@@ -173,7 +188,8 @@ export default function MoviesScreen() {
               selectedList === item.listname && styles.toggleButtonActive,
             ]}
             onPress={() => handleListToggle(item.listname)}
-            disabled={isLoading} // Disable buttons during loading
+            disabled={isLoading}
+            activeOpacity={0.7}
           >
             <Text
               style={[
@@ -190,19 +206,21 @@ export default function MoviesScreen() {
       {/* Movie List */}
       <FlatList
         ref={flatListRef}
-        data={movies}
+        data={isLoading ? Array(10).fill({}) : movies}
         renderItem={renderMovie}
-        keyExtractor={(item) => item.id.toString()}
+        keyExtractor={(item, index) =>
+          item?.id?.toString() || `skeleton-${index}`
+        }
         numColumns={2}
         columnWrapperStyle={styles.columnWrapper}
         contentContainerStyle={[
           styles.listContent,
-          movies.length === 0 && styles.listContentEmpty,
+          movies.length === 0 && !isLoading && styles.listContentEmpty,
         ]}
         onEndReached={handleLoadMore}
         onEndReachedThreshold={0.3}
-        initialNumToRender={10}
-        maxToRenderPerBatch={10}
+        initialNumToRender={6}
+        maxToRenderPerBatch={8}
         windowSize={5}
         ListFooterComponent={ListFooter}
         ListEmptyComponent={ListEmpty}
@@ -237,24 +255,28 @@ const styles = StyleSheet.create({
   },
   toggleContainer: {
     flexDirection: "row",
-    justifyContent: "space-around",
+    justifyContent: "space-between",
     marginVertical: 10,
     marginHorizontal: 16,
-    gap: 5,
   },
   toggleButton: {
     paddingVertical: 8,
     paddingHorizontal: 8,
-    borderRadius: 10,
+    borderRadius: 8,
     backgroundColor: "#2a2a2a",
+    flex: 1,
+    marginHorizontal: 4,
+    alignItems: "center",
+    justifyContent:'center'
   },
   toggleButtonActive: {
     backgroundColor: "#e21221",
   },
   toggleText: {
     color: "#ffffff",
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: "600",
+    textAlign: "center",
   },
   toggleTextActive: {
     color: "#ffffff",
@@ -283,17 +305,5 @@ const styles = StyleSheet.create({
     color: "#ffffff",
     fontSize: 16,
     textAlign: "center",
-  },
-  loadingOverlay: {
-    ...StyleSheet.absoluteFillObject, // Full-screen overlay
-    backgroundColor: "rgba(0, 0, 0, 0.7)",
-    justifyContent: "center",
-    alignItems: "center",
-    zIndex: 10, // On top of everything
-  },
-  loadingText: {
-    color: "#ffffff",
-    fontSize: 16,
-    marginTop: 10,
   },
 });

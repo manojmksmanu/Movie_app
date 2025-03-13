@@ -23,12 +23,12 @@ const TrendingMoviesCarousel = ({ setLoading }: { setLoading: any }) => {
     setLoading(isLoading);
   }, [isLoading]);
 
-  if (isLoading) return <Text style={styles.loading}>Loading...</Text>;
+
   if (error) return <Text style={styles.error}>Error: {error.message}</Text>;
 
   return (
     <View style={styles.container}>
-      {!isLoading ? (
+      {!isLoading && data ? (
         <Carousel
           loop
           width={width}
@@ -92,7 +92,7 @@ const TrendingMoviesCarousel = ({ setLoading }: { setLoading: any }) => {
             alignItems="center"
             gap={10}
           >
-            <SkeletonPlaceholder.Item width={width} height={height * 0.5} />
+            <SkeletonPlaceholder.Item width={width} height={height * 0.6} />
           </SkeletonPlaceholder.Item>
         </SkeletonPlaceholder>
       )}

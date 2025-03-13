@@ -7,17 +7,19 @@ import {
   TextInput,
   Text,
   TouchableOpacity,
+  Dimensions,
 } from "react-native";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import MovieCard from "../../components/MovieCard"; 
-import { Movie } from "../../types/movie"; 
+import MovieCard from "../../components/MovieCard";
+import { Movie } from "../../types/movie";
 import { Ionicons } from "@expo/vector-icons";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../store/store";
 import { toggleShortlist } from "../../store/movieSlice";
-import { fetchTVSeriesPage, searchMovies } from "../../services/movieApi"; 
+import { fetchTVSeriesPage, searchMovies } from "../../services/movieApi";
 import LottieView from "lottie-react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import SkeletonPlaceholder from "react-native-skeleton-placeholder";
 
 // Memoized MovieCard wrapper to prevent unnecessary re-renders
 const MemoizedMovieCard = memo(MovieCard, (prevProps: any, nextProps: any) => {
@@ -35,11 +37,33 @@ const List = [
   { name: "Top Rated", listname: "top_rated" },
 ];
 
+const { width } = Dimensions.get("window");
+const CARD_WIDTH = width / 2 - 24;
+
+// Simple series skeleton component
+const SeriesSkeletonItem = () => (
+  <View style={{ marginBottom: 8 }}>
+    <SkeletonPlaceholder
+      borderRadius={4}
+      backgroundColor="#461616"
+      highlightColor="#ff0000"
+    >
+      <SkeletonPlaceholder.Item>
+        <SkeletonPlaceholder.Item
+          width={CARD_WIDTH}
+          height={CARD_WIDTH * 1.4}
+          borderRadius={10}
+        />
+      </SkeletonPlaceholder.Item>
+    </SkeletonPlaceholder>
+  </View>
+);
+
 export default function TVSeriesScreen() {
   const dispatch = useDispatch();
   const shortlistedMovies = useSelector(
     (state: RootState) => state.movies.shortlistedMovies
-  ); 
+  );
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedQuery, setDebouncedQuery] = useState("");
   const [selectedList, setSelectedList] = useState(List[0].listname);
@@ -60,7 +84,7 @@ export default function TVSeriesScreen() {
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
     useInfiniteQuery({
-      queryKey: ["tvseries", debouncedQuery, selectedList], 
+      queryKey: ["tvseries", debouncedQuery, selectedList],
       queryFn: ({ pageParam = 1 }) =>
         debouncedQuery
           ? searchMovies(debouncedQuery, pageParam)
@@ -69,12 +93,12 @@ export default function TVSeriesScreen() {
         lastPage.nextPage <= lastPage.totalPages
           ? lastPage.nextPage
           : undefined,
-      staleTime: 5 * 60 * 1000, 
-      cacheTime: 10 * 60 * 1000, 
+      staleTime: 5 * 60 * 1000,
+      cacheTime: 10 * 60 * 1000,
       initialPageParam: 1,
     });
 
-  const series = data?.pages.flatMap((page:any) => page.results) ?? [];
+  const series = data?.pages.flatMap((page: any) => page.results) ?? [];
 
   const handleLoadMore = useCallback(() => {
     if (hasNextPage && !isFetchingNextPage) {
@@ -83,14 +107,20 @@ export default function TVSeriesScreen() {
   }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
   const renderSeries = useCallback(
-    ({ item }: { item: Movie }) => (
-      <MemoizedMovieCard
-        movie={item} // Assuming MovieCard works with TV series data
-        isShortlisted={shortlistedMovies.some((m) => m.id === item.id)}
-        onShortlist={() => dispatch(toggleShortlist(item))}
-      />
-    ),
-    [shortlistedMovies, dispatch]
+    ({ item, index }: { item: Movie; index: number }) => {
+      if (isLoading) {
+        return <SeriesSkeletonItem />;
+      }
+
+      return (
+        <MemoizedMovieCard
+          movie={item}
+          isShortlisted={shortlistedMovies.some((m) => m.id === item.id)}
+          onShortlist={() => dispatch(toggleShortlist(item))}
+        />
+      );
+    },
+    [shortlistedMovies, dispatch, isLoading]
   );
 
   const ListFooter = useCallback(
@@ -118,25 +148,13 @@ export default function TVSeriesScreen() {
   );
 
   // Toggle list handler
-  const handleListToggle = (listname: string) => {
+  const handleListToggle = useCallback((listname: string) => {
     setSelectedList(listname);
     flatListRef.current?.scrollToOffset({ offset: 0, animated: false }); // Reset scroll
-  };
+  }, []);
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* Full-screen Loading Indicator */}
-      {isLoading && (
-        <View style={styles.loadingOverlay}>
-          <LottieView
-            source={require("../../assets/lottie/Loading.json")}
-            autoPlay
-            loop
-            style={{ width: 200, height: 200 }}
-          />
-        </View>
-      )}
-
       {/* Search Bar */}
       <View style={styles.searchContainer}>
         <Ionicons
@@ -154,6 +172,11 @@ export default function TVSeriesScreen() {
           autoCapitalize="none"
           returnKeyType="search"
         />
+        {searchQuery.length > 0 && (
+          <TouchableOpacity onPress={() => setSearchQuery("")}>
+            <Ionicons name="close-circle" size={20} color="#999" />
+          </TouchableOpacity>
+        )}
       </View>
 
       {/* Toggle Buttons */}
@@ -167,12 +190,14 @@ export default function TVSeriesScreen() {
             ]}
             onPress={() => handleListToggle(item.listname)}
             disabled={isLoading}
+            activeOpacity={0.7}
           >
             <Text
               style={[
                 styles.toggleText,
                 selectedList === item.listname && styles.toggleTextActive,
               ]}
+              numberOfLines={1}
             >
               {item.name}
             </Text>
@@ -183,19 +208,21 @@ export default function TVSeriesScreen() {
       {/* Series List */}
       <FlatList
         ref={flatListRef}
-        data={series}
+        data={isLoading ? Array(10).fill({}) : series}
         renderItem={renderSeries}
-        keyExtractor={(item) => item.id.toString()}
+        keyExtractor={(item, index) =>
+          item?.id?.toString() || `skeleton-${index}`
+        }
         numColumns={2}
         columnWrapperStyle={styles.columnWrapper}
         contentContainerStyle={[
           styles.listContent,
-          series.length === 0 && styles.listContentEmpty,
+          series.length === 0 && !isLoading && styles.listContentEmpty,
         ]}
         onEndReached={handleLoadMore}
         onEndReachedThreshold={0.3}
-        initialNumToRender={10}
-        maxToRenderPerBatch={10}
+        initialNumToRender={6}
+        maxToRenderPerBatch={8}
         windowSize={5}
         ListFooterComponent={ListFooter}
         ListEmptyComponent={ListEmpty}
@@ -218,6 +245,7 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     borderRadius: 8,
     paddingHorizontal: 12,
+    height: 46,
   },
   searchIcon: {
     marginRight: 8,
@@ -230,29 +258,33 @@ const styles = StyleSheet.create({
   },
   toggleContainer: {
     flexDirection: "row",
-    justifyContent: "space-around",
+    justifyContent: "space-between",
     marginVertical: 10,
     marginHorizontal: 16,
   },
   toggleButton: {
     paddingVertical: 8,
-    paddingHorizontal: 16,
-    borderRadius: 20,
+    paddingHorizontal: 8,
+    borderRadius: 8,
     backgroundColor: "#2a2a2a",
+    flex: 1,
+    marginHorizontal: 4,
+    alignItems: "center",
   },
   toggleButtonActive: {
     backgroundColor: "#e21221",
   },
   toggleText: {
     color: "#ffffff",
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: "600",
+    textAlign: "center",
   },
   toggleTextActive: {
     color: "#ffffff",
   },
   columnWrapper: {
-    justifyContent: "space-between",
+    justifyContent: "space-evenly",
     paddingHorizontal: 8,
   },
   listContent: {
@@ -275,17 +307,5 @@ const styles = StyleSheet.create({
     color: "#ffffff",
     fontSize: 16,
     textAlign: "center",
-  },
-  loadingOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: "rgba(0, 0, 0, 0.7)",
-    justifyContent: "center",
-    alignItems: "center",
-    zIndex: 10,
-  },
-  loadingText: {
-    color: "#ffffff",
-    fontSize: 16,
-    marginTop: 10,
   },
 });
