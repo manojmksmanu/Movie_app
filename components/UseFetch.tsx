@@ -21,7 +21,7 @@ const UseFetch = () => {
         });
         console.log('Response: manoj', response.data);
         setData(response.data);
-      } catch (error) {
+      } catch (error:any) {
         console.error('Error fetching data:', error);
         setError(error);
       } finally {

@@ -14,14 +14,11 @@ import SkeletonPlaceholder from "react-native-skeleton-placeholder";
 
 const { width, height } = Dimensions.get("window");
 
-const Shows = ({setLoading}) => {
+const Shows = () => {
   const [dayWeek, setDayWeek] = useState("day");
   const { data: movies, isLoading, error } = useTrendingTvByDays(dayWeek);
 
-    useEffect(() => {
-      setLoading(isLoading);
-    }, [isLoading]);
-  // Card settings
+
   const cardWidth = width * 0.40;
 
   if (error) {
