@@ -197,7 +197,6 @@ export default function TVSeriesScreen() {
                 styles.toggleText,
                 selectedList === item.listname && styles.toggleTextActive,
               ]}
-              numberOfLines={1}
             >
               {item.name}
             </Text>
@@ -270,6 +269,8 @@ const styles = StyleSheet.create({
     flex: 1,
     marginHorizontal: 4,
     alignItems: "center",
+    justifyContent:'center'
+    
   },
   toggleButtonActive: {
     backgroundColor: "#e21221",
@@ -279,6 +280,7 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: "600",
     textAlign: "center",
+  
   },
   toggleTextActive: {
     color: "#ffffff",

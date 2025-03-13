@@ -9,7 +9,9 @@ export default function TabLayout() {
         headerShown: false,
         tabBarStyle: {
           backgroundColor: "#1a1a1a",
-          borderTopWidth: 0,
+          borderColor:'red',
+          borderWidth: 4,
+          borderBottomWidth:0,
           height: 70,
           paddingBottom: 10,
           paddingTop: 5,
