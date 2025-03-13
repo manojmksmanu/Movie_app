@@ -10,6 +10,7 @@ import {
 import { Dimensions } from "react-native";
 import { useTrendingMoviesByDays, useTrendingTvByDays } from "@/services/homeApi";
 import { LinearGradient } from "expo-linear-gradient";
+import SkeletonPlaceholder from "react-native-skeleton-placeholder";
 
 const { width, height } = Dimensions.get("window");
 
@@ -63,27 +64,31 @@ const Shows = ({setLoading}) => {
       {/* Movie Cards */}
       <View style={styles.cardsContainer}>
         <FlatList
-          data={movies || []}
+          data={isLoading ? Array(10).fill({}) : movies || []}
           horizontal
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.listContainer}
-          keyExtractor={(item) => item.id.toString()}
+          keyExtractor={(item) => item?.id?.toString()}
           snapToInterval={cardWidth}
           decelerationRate="fast"
-          renderItem={({ item }) => (
-            <TouchableOpacity
-              activeOpacity={0.9}
-              style={[styles.cardWrapper, { width: cardWidth,height:cardWidth*1.4 }]}
-            >
-              <View style={styles.card}>
-                <Image
-                  source={{
-                    uri: `https://image.tmdb.org/t/p/w500${item.poster_path}`,
-                  }}
-                  style={styles.poster}
-                  resizeMode="cover"
-                />
-                {/* <LinearGradient
+          renderItem={({ item }) =>
+            !isLoading ? (
+              <TouchableOpacity
+                activeOpacity={0.9}
+                style={[
+                  styles.cardWrapper,
+                  { width: cardWidth, height: cardWidth * 1.4 },
+                ]}
+              >
+                <View style={styles.card}>
+                  <Image
+                    source={{
+                      uri: `https://image.tmdb.org/t/p/w500${item.poster_path}`,
+                    }}
+                    style={styles.poster}
+                    resizeMode="cover"
+                  />
+                  {/* <LinearGradient
                   colors={["transparent", "rgba(0,0,0,0.9)"]}
                   style={styles.gradient}
                 >
@@ -96,9 +101,28 @@ const Shows = ({setLoading}) => {
                     </Text>
                   </View>
                 </LinearGradient> */}
-              </View>
-            </TouchableOpacity>
-          )}
+                </View>
+              </TouchableOpacity>
+            ) : (
+              <SkeletonPlaceholder
+                borderRadius={4}
+                backgroundColor="#461616"
+                highlightColor="#ff0000"
+              >
+                <SkeletonPlaceholder.Item
+                  flexDirection="row"
+                  alignItems="center"
+                  gap={10}
+                >
+                  <SkeletonPlaceholder.Item
+                    width={cardWidth}
+                    height={cardWidth * 1.4}
+                    borderRadius={12}
+                  />
+                </SkeletonPlaceholder.Item>
+              </SkeletonPlaceholder>
+            )
+          }
         />
       </View>
     </View>
@@ -154,6 +178,7 @@ const styles = StyleSheet.create({
   },
   listContainer: {
     paddingHorizontal: 10,
+    gap:10
   },
   // Card Styles
   cardWrapper: {

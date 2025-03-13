@@ -73,7 +73,7 @@ const Movie = ({ setLoading }) => {
           snapToInterval={cardWidth}
           decelerationRate="fast"
           renderItem={({ item }) =>
-            isLoading ? (
+            !isLoading ? (
               <TouchableOpacity
                 activeOpacity={0.9}
                 style={[
@@ -106,7 +106,6 @@ const Movie = ({ setLoading }) => {
                     width={cardWidth}
                     height={cardWidth * 1.4}
                     borderRadius={12}
-                    
                   />
                 </SkeletonPlaceholder.Item>
               </SkeletonPlaceholder>
@@ -167,11 +166,10 @@ const styles = StyleSheet.create({
   },
   listContainer: {
     paddingHorizontal: 10,
-    gap:10
+    gap: 10,
   },
   // Card Styles
-  cardWrapper: {
-  },
+  cardWrapper: {},
   card: {
     flex: 1,
     borderRadius: 12,
