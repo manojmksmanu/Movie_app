@@ -1,12 +1,12 @@
 import { Tabs } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { StyleSheet, View } from "react-native";
-
+import { SafeAreaView } from "react-native-safe-area-context";
 export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        headerShown: true,
+        headerShown: false,
         tabBarStyle: {
           backgroundColor: "#1a1a1a",
           borderTopWidth: 0,
@@ -114,7 +114,7 @@ export default function TabLayout() {
       />
       <Tabs.Screen
         name="tv"
-        
+      
         options={{
           title: "TV",
           tabBarIcon: ({ size, color, focused }) => (

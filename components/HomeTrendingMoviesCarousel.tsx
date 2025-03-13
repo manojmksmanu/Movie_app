@@ -15,7 +15,7 @@ import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 
 const { width, height } = Dimensions.get("window");
 
-const TrendingMoviesCarousel = ({ setLoading }) => {
+const TrendingMoviesCarousel = ({ setLoading }:{setLoading:any}) => {
   const { data, isLoading, error } = useTrendingMovies();
 
   useEffect(() => {
@@ -35,7 +35,7 @@ const TrendingMoviesCarousel = ({ setLoading }) => {
         autoPlayInterval={4000}
         scrollAnimationDuration={1000}
         data={data.results}
-        renderItem={({ item }) => (
+        renderItem={({ item }:{item:any}) => (
           <TouchableOpacity activeOpacity={0.9}>
             <Animated.View
               style={styles.card}
@@ -50,14 +50,13 @@ const TrendingMoviesCarousel = ({ setLoading }) => {
                 style={styles.image}
               />
 
-              {/* Gradient Overlay - Should be between image and content */}
-              <View
-             
-                style={styles.overlay}
-              />
-
               {/* Movie Details - Now separate from the gradient */}
-              <View style={styles.infoContainer}>
+              <LinearGradient
+                colors={["rgba(150, 0, 0, 0.9)", "rgba(247, 27, 27, 0.7)"]}
+                start={{ x: 0.2, y: 0.5 }}
+                end={{ x: 0.1, y: 0.1 }}
+                style={styles.infoContainer}
+              >
                 <Text style={styles.title}>{item.title || item.name}</Text>
                 <View style={styles.row}>
                   <AntDesign name="star" size={18} color="#FFD700" />
@@ -75,7 +74,7 @@ const TrendingMoviesCarousel = ({ setLoading }) => {
                 >
                   <Text style={styles.exploreText}>Explore</Text>
                 </TouchableOpacity>
-              </View>
+              </LinearGradient>
             </Animated.View>
           </TouchableOpacity>
         )}
@@ -99,20 +98,15 @@ const styles = StyleSheet.create({
     width: "100%",
     height: "100%",
   },
-  overlay: {
-    // position: "absolute",
-    // bottom: 0,
-    // right: 0,
-    // left: 0,
-    // borderTopLeftRadius: 30,
-    backgroundColor:'red'
-  },
+
   infoContainer: {
     position: "absolute",
-    bottom: 30,
-    left: 20,
-    right: 20,
-    zIndex: 2, // Ensure content appears above gradient
+    bottom: 0,
+    left: 0,
+    right: 0,
+    zIndex: 2, 
+    padding:20,
+    borderTopRightRadius:60
   },
   title: {
     color: "#fff",

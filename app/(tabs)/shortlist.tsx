@@ -4,6 +4,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../../store/store';
 import MovieCard from '../../components/MovieCard';
 import { Movie } from '../../types/movie';
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function ShortlistScreen() {
   const shortlistedMovies = useSelector(
@@ -26,7 +27,7 @@ export default function ShortlistScreen() {
   }
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <FlatList
         data={shortlistedMovies}
         renderItem={renderMovie}
@@ -35,7 +36,7 @@ export default function ShortlistScreen() {
         columnWrapperStyle={styles.columnWrapper}
         contentContainerStyle={styles.listContent}
       />
-    </View>
+    </SafeAreaView>
   );
 }
 
@@ -54,6 +55,8 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   emptyContainer: {
+    display:'flex',
+    flexDirection:'column',
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,

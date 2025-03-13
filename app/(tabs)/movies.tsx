@@ -21,6 +21,10 @@ import {
   searchMovies,
 } from "../../services/movieApi";
 import LottieView from "lottie-react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+
+
+
 
 // Memoized MovieCard wrapper to prevent unnecessary re-renders
 const MemoizedMovieCard = memo(MovieCard, (prevProps: any, nextProps: any) => {
@@ -127,7 +131,7 @@ export default function MoviesScreen() {
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       {/* Full-screen Loading Indicator */}
       {isLoading && (
         <View style={styles.loadingOverlay}>
@@ -204,7 +208,7 @@ export default function MoviesScreen() {
         ListEmptyComponent={ListEmpty}
         showsVerticalScrollIndicator={false}
       />
-    </View>
+    </SafeAreaView>
   );
 }
 

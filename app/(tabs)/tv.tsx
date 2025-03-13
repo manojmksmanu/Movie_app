@@ -17,6 +17,8 @@ import { RootState } from "../../store/store";
 import { toggleShortlist } from "../../store/movieSlice";
 import { fetchTVSeriesPage, searchMovies } from "../../services/movieApi"; // Import fetchTVSeriesPage
 import LottieView from "lottie-react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+
 
 // Memoized MovieCard wrapper to prevent unnecessary re-renders
 const MemoizedMovieCard = memo(MovieCard, (prevProps: any, nextProps: any) => {
@@ -123,7 +125,7 @@ export default function TVSeriesScreen() {
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       {/* Full-screen Loading Indicator */}
       {isLoading && (
         <View style={styles.loadingOverlay}>
@@ -200,7 +202,7 @@ export default function TVSeriesScreen() {
         ListEmptyComponent={ListEmpty}
         showsVerticalScrollIndicator={false}
       />
-    </View>
+    </SafeAreaView>
   );
 }
 
