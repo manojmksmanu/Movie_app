@@ -9,16 +9,15 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import MovieCard from "../../components/MovieCard"; // Reuse MovieCard (assuming it works for TV series)
-import { Movie } from "../../types/movie"; // Adjust if TV series needs a different type
+import MovieCard from "../../components/MovieCard"; 
+import { Movie } from "../../types/movie"; 
 import { Ionicons } from "@expo/vector-icons";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../store/store";
 import { toggleShortlist } from "../../store/movieSlice";
-import { fetchTVSeriesPage, searchMovies } from "../../services/movieApi"; // Import fetchTVSeriesPage
+import { fetchTVSeriesPage, searchMovies } from "../../services/movieApi"; 
 import LottieView from "lottie-react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-
 
 // Memoized MovieCard wrapper to prevent unnecessary re-renders
 const MemoizedMovieCard = memo(MovieCard, (prevProps: any, nextProps: any) => {
@@ -40,10 +39,10 @@ export default function TVSeriesScreen() {
   const dispatch = useDispatch();
   const shortlistedMovies = useSelector(
     (state: RootState) => state.movies.shortlistedMovies
-  ); // Assuming shortlist works for TV series too
+  ); 
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedQuery, setDebouncedQuery] = useState("");
-  const [selectedList, setSelectedList] = useState(List[0].listname); // Default to "airing_today"
+  const [selectedList, setSelectedList] = useState(List[0].listname);
   const flatListRef = useRef<FlatList>(null);
 
   // Optimized debounce with useCallback
@@ -61,21 +60,21 @@ export default function TVSeriesScreen() {
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
     useInfiniteQuery({
-      queryKey: ["tvseries", debouncedQuery, selectedList], // Unique key for TV series
+      queryKey: ["tvseries", debouncedQuery, selectedList], 
       queryFn: ({ pageParam = 1 }) =>
         debouncedQuery
-          ? searchMovies(debouncedQuery, pageParam) // Reuse movie search (adjust if needed)
-          : fetchTVSeriesPage({ pageParam, showList: selectedList }), // Fetch TV series
+          ? searchMovies(debouncedQuery, pageParam)
+          : fetchTVSeriesPage({ pageParam, showList: selectedList }),
       getNextPageParam: (lastPage) =>
         lastPage.nextPage <= lastPage.totalPages
           ? lastPage.nextPage
           : undefined,
-      staleTime: 5 * 60 * 1000, // 5 minutes
-      cacheTime: 10 * 60 * 1000, // 10 minutes
+      staleTime: 5 * 60 * 1000, 
+      cacheTime: 10 * 60 * 1000, 
       initialPageParam: 1,
     });
 
-  const series = data?.pages.flatMap((page) => page.results) ?? [];
+  const series = data?.pages.flatMap((page:any) => page.results) ?? [];
 
   const handleLoadMore = useCallback(() => {
     if (hasNextPage && !isFetchingNextPage) {

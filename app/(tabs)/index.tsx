@@ -19,7 +19,7 @@ const Index = () => {
   return (
     <View style={{ flex: 1, backgroundColor: "#1A1A1A" }}>
       {/* Loader */}
-      {loading && (
+      {/* {loading && (
         <View
           style={{
             position: "absolute",
@@ -41,7 +41,7 @@ const Index = () => {
             style={{ width: 200, height: 200 }}
           />
         </View>
-      )}
+      )} */}
 
       {/* Main Content */}
       <ScrollView>

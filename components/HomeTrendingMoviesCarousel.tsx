@@ -12,10 +12,11 @@ import Carousel from "react-native-reanimated-carousel";
 import { LinearGradient } from "expo-linear-gradient";
 import { AntDesign } from "@expo/vector-icons";
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
+import SkeletonPlaceholder from "react-native-skeleton-placeholder";
 
 const { width, height } = Dimensions.get("window");
 
-const TrendingMoviesCarousel = ({ setLoading }:{setLoading:any}) => {
+const TrendingMoviesCarousel = ({ setLoading }: { setLoading: any }) => {
   const { data, isLoading, error } = useTrendingMovies();
 
   useEffect(() => {
@@ -27,58 +28,74 @@ const TrendingMoviesCarousel = ({ setLoading }:{setLoading:any}) => {
 
   return (
     <View style={styles.container}>
-      <Carousel
-        loop
-        width={width}
-        height={height * 0.5}
-        autoPlay
-        autoPlayInterval={4000}
-        scrollAnimationDuration={1000}
-        data={data.results}
-        renderItem={({ item }:{item:any}) => (
-          <TouchableOpacity activeOpacity={0.9}>
-            <Animated.View
-              style={styles.card}
-              entering={FadeIn.duration(800)}
-              exiting={FadeOut.duration(600)}
-            >
-              {/* Movie Image */}
-              <Image
-                source={{
-                  uri: `https://image.tmdb.org/t/p/w780${item.backdrop_path}`,
-                }}
-                style={styles.image}
-              />
-
-              {/* Movie Details - Now separate from the gradient */}
-              <LinearGradient
-                colors={["rgba(150, 0, 0, 0.9)", "rgba(247, 27, 27, 0.7)"]}
-                start={{ x: 0.2, y: 0.5 }}
-                end={{ x: 0.1, y: 0.1 }}
-                style={styles.infoContainer}
+      {!isLoading ? (
+        <Carousel
+          loop
+          width={width}
+          height={height * 0.6}
+          autoPlay
+          autoPlayInterval={4000}
+          scrollAnimationDuration={1000}
+          data={data.results}
+          renderItem={({ item }: { item: any }) => (
+            <TouchableOpacity activeOpacity={0.9}>
+              <Animated.View
+                style={styles.card}
+                entering={FadeIn.duration(800)}
+                exiting={FadeOut.duration(600)}
               >
-                <Text style={styles.title}>{item.title || item.name}</Text>
-                <View style={styles.row}>
-                  <AntDesign name="star" size={18} color="#FFD700" />
-                  <Text style={styles.rating}>
-                    {item.vote_average.toFixed(1)}
-                  </Text>
-                </View>
-                <Text style={styles.description} numberOfLines={2}>
-                  {item.overview || "No description available"}
-                </Text>
-                {/* Explore Button */}
-                <TouchableOpacity
-                  style={styles.exploreButton}
-                  onPress={() => alert(`Explore: ${item.title}`)}
+                {/* Movie Image */}
+                <Image
+                  source={{
+                    uri: `https://image.tmdb.org/t/p/w780${item.backdrop_path}`,
+                  }}
+                  style={styles.image}
+                />
+
+                {/* Movie Details - Now separate from the gradient */}
+                <LinearGradient
+                  colors={["rgba(150, 0, 0, 0.9)", "rgba(247, 27, 27, 0.7)"]}
+                  start={{ x: 0.2, y: 0.5 }}
+                  end={{ x: 0.1, y: 0.1 }}
+                  style={styles.infoContainer}
                 >
-                  <Text style={styles.exploreText}>Explore</Text>
-                </TouchableOpacity>
-              </LinearGradient>
-            </Animated.View>
-          </TouchableOpacity>
-        )}
-      />
+                  <Text style={styles.title}>{item.title || item.name}</Text>
+                  <View style={styles.row}>
+                    <AntDesign name="star" size={18} color="#FFD700" />
+                    <Text style={styles.rating}>
+                      {item.vote_average.toFixed(1)}
+                    </Text>
+                  </View>
+                  <Text style={styles.description} numberOfLines={2}>
+                    {item.overview || "No description available"}
+                  </Text>
+                  {/* Explore Button */}
+                  <TouchableOpacity
+                    style={styles.exploreButton}
+                    onPress={() => alert(`Explore: ${item.title}`)}
+                  >
+                    <Text style={styles.exploreText}>Explore</Text>
+                  </TouchableOpacity>
+                </LinearGradient>
+              </Animated.View>
+            </TouchableOpacity>
+          )}
+        />
+      ) : (
+        <SkeletonPlaceholder
+          borderRadius={4}
+          backgroundColor="#461616"
+          highlightColor="#ff0000"
+        >
+          <SkeletonPlaceholder.Item
+            flexDirection="row"
+            alignItems="center"
+            gap={10}
+          >
+            <SkeletonPlaceholder.Item width={width} height={height * 0.5} />
+          </SkeletonPlaceholder.Item>
+        </SkeletonPlaceholder>
+      )}
     </View>
   );
 };
@@ -90,7 +107,7 @@ const styles = StyleSheet.create({
   card: {
     position: "relative",
     width: width,
-    height: height * 0.5,
+    height: height * 0.6,
     justifyContent: "flex-end",
     overflow: "hidden",
   },
@@ -104,9 +121,9 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    zIndex: 2, 
-    padding:20,
-    borderTopRightRadius:60
+    zIndex: 2,
+    padding: 20,
+    borderTopRightRadius: 60,
   },
   title: {
     color: "#fff",

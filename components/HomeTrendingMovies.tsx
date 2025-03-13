@@ -10,19 +10,20 @@ import {
 import { Dimensions } from "react-native";
 import { useTrendingMoviesByDays } from "@/services/homeApi";
 import { LinearGradient } from "expo-linear-gradient";
+import SkeletonPlaceholder from "react-native-skeleton-placeholder";
 
 const { width, height } = Dimensions.get("window");
 
-const Movie = ({setLoading}) => {
+const Movie = ({ setLoading }) => {
   const [dayWeek, setDayWeek] = useState("day");
   const { data: movies, isLoading, error } = useTrendingMoviesByDays(dayWeek);
 
-    useEffect(() => {
-      setLoading(isLoading);
-    }, [isLoading]);
+  useEffect(() => {
+    setLoading(isLoading);
+  }, [isLoading]);
 
   // Card settings
-  const cardWidth = width * 0.40;
+  const cardWidth = width * 0.4;
 
   if (error) {
     return (
@@ -64,42 +65,53 @@ const Movie = ({setLoading}) => {
       {/* Movie Cards */}
       <View style={styles.cardsContainer}>
         <FlatList
-          data={movies || []}
+          data={isLoading ? Array(10).fill({}) : movies || []}
           horizontal
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.listContainer}
-          keyExtractor={(item) => item.id.toString()}
+          keyExtractor={(item) => item?.id?.toString()}
           snapToInterval={cardWidth}
           decelerationRate="fast"
-          renderItem={({ item }) => (
-            <TouchableOpacity
-              activeOpacity={0.9}
-              style={[styles.cardWrapper, { width: cardWidth,height:cardWidth*1.4 }]}
-            >
-              <View style={styles.card}>
-                <Image
-                  source={{
-                    uri: `https://image.tmdb.org/t/p/w500${item.poster_path}`,
-                  }}
-                  style={styles.poster}
-                  resizeMode="cover"
-                />
-                {/* <LinearGradient
-                  colors={["transparent", "rgba(0,0,0,0.9)"]}
-                  style={styles.gradient}
+          renderItem={({ item }) =>
+            isLoading ? (
+              <TouchableOpacity
+                activeOpacity={0.9}
+                style={[
+                  styles.cardWrapper,
+                  { width: cardWidth, height: cardWidth * 1.4 },
+                ]}
+              >
+                <View style={styles.card}>
+                  <Image
+                    source={{
+                      uri: `https://image.tmdb.org/t/p/w500${item.poster_path}`,
+                    }}
+                    style={styles.poster}
+                    resizeMode="cover"
+                  />
+                </View>
+              </TouchableOpacity>
+            ) : (
+              <SkeletonPlaceholder
+                borderRadius={4}
+                backgroundColor="#461616"
+                highlightColor="#ff0000"
+              >
+                <SkeletonPlaceholder.Item
+                  flexDirection="row"
+                  alignItems="center"
+                  gap={10}
                 >
-                  <Text style={styles.movieTitle} numberOfLines={1}>
-                    {item.title || item.name}
-                  </Text>
-                  <View style={styles.ratingContainer}>
-                    <Text style={styles.rating}>
-                      ★ {item.vote_average?.toFixed(1) || "N/A"}
-                    </Text>
-                  </View>
-                </LinearGradient> */}
-              </View>
-            </TouchableOpacity>
-          )}
+                  <SkeletonPlaceholder.Item
+                    width={cardWidth}
+                    height={cardWidth * 1.4}
+                    borderRadius={12}
+                    
+                  />
+                </SkeletonPlaceholder.Item>
+              </SkeletonPlaceholder>
+            )
+          }
         />
       </View>
     </View>
@@ -155,10 +167,10 @@ const styles = StyleSheet.create({
   },
   listContainer: {
     paddingHorizontal: 10,
+    gap:10
   },
   // Card Styles
   cardWrapper: {
-    paddingHorizontal: 5,
   },
   card: {
     flex: 1,
