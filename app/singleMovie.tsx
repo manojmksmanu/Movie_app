@@ -5,7 +5,6 @@ import {
   ScrollView,
   Image,
   StyleSheet,
-  ActivityIndicator,
   FlatList,
   TouchableOpacity,
 } from "react-native";
@@ -70,8 +69,8 @@ export default function SingleMovieScreen() {
       <YoutubePlayer
         height={280}
         width={360}
-        videoId={item.key} 
-        play={false} 
+        videoId={item.key}
+        play={false}
         initialPlayerParams={{
           controls: true,
         }}
@@ -93,7 +92,6 @@ export default function SingleMovieScreen() {
           loop
           style={{ width: 200, height: 200 }}
         />
-
         <Text style={styles.loadingText}>Loading Details...</Text>
       </View>
     );
@@ -136,52 +134,64 @@ export default function SingleMovieScreen() {
         </View>
 
         {/* Overview */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Overview</Text>
-          <Text style={styles.overview}>{movie.overview}</Text>
-        </View>
+        {movie.overview && (
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Overview</Text>
+            <Text style={styles.overview}>{movie.overview}</Text>
+          </View>
+        )}
 
         {/* Metadata */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Details</Text>
           <View style={styles.metadataCard}>
-            <View style={styles.metadataRow}>
-              <Ionicons name="time-outline" size={20} color="#e21221" />
-              <Text style={styles.metadataText}> {movie.runtime} mins</Text>
-            </View>
-            <View style={styles.metadataRow}>
-              <Ionicons name="calendar-outline" size={20} color="#e21221" />
-              <Text style={styles.metadataText}> {movie.release_date}</Text>
-            </View>
-            <View style={styles.metadataRow}>
-              <Ionicons name="star-outline" size={20} color="#e21221" />
-              <Text style={styles.metadataText}>
-                {" "}
-                {movie.vote_average.toFixed(1)}/10
-              </Text>
-            </View>
-            <View style={styles.metadataRow}>
-              <Ionicons name="film-outline" size={20} color="#e21221" />
-              <Text style={styles.metadataText}>
-                {" "}
-                {movie.genres.map((g) => g.name).join(", ")}
-              </Text>
-            </View>
+            {movie.runtime && (
+              <View style={styles.metadataRow}>
+                <Ionicons name="time-outline" size={20} color="#e21221" />
+                <Text style={styles.metadataText}> {movie.runtime} mins</Text>
+              </View>
+            )}
+            {movie.release_date && (
+              <View style={styles.metadataRow}>
+                <Ionicons name="calendar-outline" size={20} color="#e21221" />
+                <Text style={styles.metadataText}> {movie.release_date}</Text>
+              </View>
+            )}
+            {movie.vote_average && (
+              <View style={styles.metadataRow}>
+                <Ionicons name="star-outline" size={20} color="#e21221" />
+                <Text style={styles.metadataText}>
+                  {" "}
+                  {movie.vote_average.toFixed(1)}/10
+                </Text>
+              </View>
+            )}
+            {movie.genres.length > 0 && (
+              <View style={styles.metadataRow}>
+                <Ionicons name="film-outline" size={20} color="#e21221" />
+                <Text style={styles.metadataText}>
+                  {" "}
+                  {movie.genres.map((g) => g.name).join(", ")}
+                </Text>
+              </View>
+            )}
           </View>
         </View>
 
         {/* Cast */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Top Cast</Text>
-          <FlatList
-            data={cast}
-            renderItem={renderCastItem}
-            keyExtractor={(item) => item.id.toString()}
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.castList}
-          />
-        </View>
+        {cast.length > 0 && (
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Top Cast</Text>
+            <FlatList
+              data={cast}
+              renderItem={renderCastItem}
+              keyExtractor={(item) => item.id.toString()}
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.castList}
+            />
+          </View>
+        )}
 
         {/* Videos */}
         {videos.length > 0 && (
@@ -218,6 +228,7 @@ export default function SingleMovieScreen() {
   );
 }
 
+// Styles remain unchanged
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -363,13 +374,6 @@ const styles = StyleSheet.create({
   videoItem: {
     width: 300,
     marginRight: 16,
-  },
-  videoPlayer: {
-    width: "100%",
-    height: 180,
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: "#e21221",
   },
   videoTitle: {
     color: "#ffffff",

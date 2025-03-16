@@ -1,9 +1,9 @@
-import React from 'react';
-import { View, StyleSheet, FlatList, Text } from 'react-native';
-import { useSelector } from 'react-redux';
-import { RootState } from '../../store/store';
-import MovieCard from '../../components/MovieCard';
-import { Movie } from '../../types/movie';
+import React from "react";
+import { View, StyleSheet, FlatList, Text } from "react-native";
+import { useSelector } from "react-redux";
+import { RootState } from "../../store/store";
+import MovieCard from "../../components/MovieCard";
+import { Movie } from "../../types/movie";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function ShortlistScreen() {
@@ -11,11 +11,7 @@ export default function ShortlistScreen() {
     (state: RootState) => state.movies.shortlistedMovies
   );
 
-  console.log(shortlistedMovies)
-
-  const renderMovie = ({ item }: { item: Movie }) => (
-    <MovieCard movie={item} />
-  );
+  const renderMovie = ({ item }: { item: Movie }) => <MovieCard movie={item} />;
 
   if (shortlistedMovies.length === 0) {
     return (
@@ -45,33 +41,34 @@ export default function ShortlistScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#121212',
-    display:'flex',
-    justifyContent:'center',
-    flexDirection:'row',
+    backgroundColor: "#121212",
+    display: "flex",
+    justifyContent: "center",
+    flexDirection: "row",
+    paddingBottom: 80,
   },
   columnWrapper: {
-    justifyContent: 'space-between',
+    justifyContent: "space-between",
   },
   listContent: {
     padding: 16,
   },
   emptyContainer: {
-    display:'flex',
-    flexDirection:'column',
-    justifyContent: 'center',
-    alignItems: 'center',
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center",
     padding: 20,
   },
   emptyText: {
-    color: '#ffffff',
+    color: "#ffffff",
     fontSize: 18,
-    fontWeight: '600',
+    fontWeight: "600",
     marginBottom: 8,
   },
   emptySubtext: {
-    color: '#999999',
+    color: "#999999",
     fontSize: 14,
-    textAlign: 'center',
+    textAlign: "center",
   },
 });

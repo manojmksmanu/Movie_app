@@ -16,7 +16,6 @@ import { RootState } from "../store/store";
 import { useRouter } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
 
-
 const { width } = Dimensions.get("window");
 const CARD_WIDTH = width / 2 - 24;
 
@@ -68,10 +67,14 @@ export default function MovieCard({ movie }: any) {
           style={styles.content}
         >
           <Text style={styles.title} numberOfLines={2}>
-             {movie?.title ? movie?.title : movie?.name}
+            {movie?.title ? movie?.title : movie?.name}
           </Text>
           <View style={styles.bottomRow}>
-            <Text style={styles.rating}>★ {movie.vote_average.toFixed(1)}</Text>
+            {movie.vote_average > 0 && (
+              <Text style={styles.rating}>
+                ★ {movie.vote_average.toFixed(1)}
+              </Text>
+            )}
             <TouchableOpacity
               style={styles.readMoreButton}
               onPress={() =>
@@ -117,7 +120,7 @@ const styles = StyleSheet.create({
     bottom: 0,
     right: 0,
     left: 0,
-    borderTopLeftRadius:30,
+    borderTopLeftRadius: 30,
     justifyContent: "space-between",
   },
   title: {
@@ -134,7 +137,7 @@ const styles = StyleSheet.create({
   rating: {
     fontSize: 14,
     color: "#ffd700",
-    fontWeight: "bold", // Added for better visibility
+    fontWeight: "bold",
   },
   shortlistButton: {
     position: "absolute",
@@ -146,12 +149,12 @@ const styles = StyleSheet.create({
     zIndex: 10,
   },
   readMoreButton: {
-    backgroundColor: "rgba(255,255,255,0.2)", // Changed to semi-transparent white
+    backgroundColor: "rgba(255,255,255,0.2)",
     paddingVertical: 4,
     paddingHorizontal: 8,
     borderRadius: 4,
     borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.3)", // Added subtle border
+    borderColor: "rgba(255,255,255,0.3)",
   },
   readMoreText: {
     color: "#ffffff",
