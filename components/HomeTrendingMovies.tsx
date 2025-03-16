@@ -11,13 +11,14 @@ import { Dimensions } from "react-native";
 import { useTrendingMoviesByDays } from "@/services/homeApi";
 import { LinearGradient } from "expo-linear-gradient";
 import SkeletonPlaceholder from "react-native-skeleton-placeholder";
+import { useRouter } from "expo-router";
 
 const { width, height } = Dimensions.get("window");
 
 const Movie = () => {
   const [dayWeek, setDayWeek] = useState("day");
   const { data: movies, isLoading, error } = useTrendingMoviesByDays(dayWeek);
-
+  const router = useRouter();
   const cardWidth = width * 0.4;
 
   if (error) {
@@ -76,7 +77,15 @@ const Movie = () => {
                   { width: cardWidth, height: cardWidth * 1.4 },
                 ]}
               >
-                <View style={styles.card}>
+                <TouchableOpacity
+                  onPress={() =>
+                    router.navigate({
+                      pathname: "/singleMovie",
+                      params: { id: item.id },
+                    })
+                  }
+                  style={styles.card}
+                >
                   <Image
                     source={{
                       uri: `https://image.tmdb.org/t/p/w500${item.poster_path}`,
@@ -84,7 +93,7 @@ const Movie = () => {
                     style={styles.poster}
                     resizeMode="cover"
                   />
-                </View>
+                </TouchableOpacity>
               </TouchableOpacity>
             ) : (
               <SkeletonPlaceholder

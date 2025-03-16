@@ -13,12 +13,13 @@ import { LinearGradient } from "expo-linear-gradient";
 import { AntDesign } from "@expo/vector-icons";
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 import SkeletonPlaceholder from "react-native-skeleton-placeholder";
+import { useRouter } from "expo-router";
 
 const { width, height } = Dimensions.get("window");
 
 const TrendingMoviesCarousel = ({ setLoading }: { setLoading: any }) => {
   const { data, isLoading, error } = useTrendingMovies();
-
+  const router = useRouter();
   useEffect(() => {
     setLoading(isLoading);
   }, [isLoading]);
@@ -72,7 +73,12 @@ const TrendingMoviesCarousel = ({ setLoading }: { setLoading: any }) => {
                   {/* Explore Button */}
                   <TouchableOpacity
                     style={styles.exploreButton}
-                    onPress={() => alert(`Explore: ${item.title}`)}
+                    onPress={() =>
+                      router.navigate({
+                        pathname: "/singleMovie",
+                        params: { id: item.id },
+                      })
+                    }
                   >
                     <Text style={styles.exploreText}>Explore</Text>
                   </TouchableOpacity>

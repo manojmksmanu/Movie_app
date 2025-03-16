@@ -11,13 +11,14 @@ import { Dimensions } from "react-native";
 import { useTrendingMoviesByDays, useTrendingTvByDays } from "@/services/homeApi";
 import { LinearGradient } from "expo-linear-gradient";
 import SkeletonPlaceholder from "react-native-skeleton-placeholder";
+import { useRouter } from "expo-router";
 
 const { width, height } = Dimensions.get("window");
 
 const Shows = () => {
   const [dayWeek, setDayWeek] = useState("day");
   const { data: movies, isLoading, error } = useTrendingTvByDays(dayWeek);
-
+  const router = useRouter();
 
   const cardWidth = width * 0.40;
 
@@ -77,7 +78,15 @@ const Shows = () => {
                   { width: cardWidth, height: cardWidth * 1.4 },
                 ]}
               >
-                <View style={styles.card}>
+                <TouchableOpacity
+                  onPress={() =>
+                    router.navigate({
+                      pathname: "/singleMovie",
+                      params: { id: item.id },
+                    })
+                  }
+                  style={styles.card}
+                >
                   <Image
                     source={{
                       uri: `https://image.tmdb.org/t/p/w500${item.poster_path}`,
@@ -85,20 +94,7 @@ const Shows = () => {
                     style={styles.poster}
                     resizeMode="cover"
                   />
-                  {/* <LinearGradient
-                  colors={["transparent", "rgba(0,0,0,0.9)"]}
-                  style={styles.gradient}
-                >
-                  <Text style={styles.movieTitle} numberOfLines={1}>
-                    {item.title || item.name}
-                  </Text>
-                  <View style={styles.ratingContainer}>
-                    <Text style={styles.rating}>
-                      ★ {item.vote_average?.toFixed(1) || "N/A"}
-                    </Text>
-                  </View>
-                </LinearGradient> */}
-                </View>
+                </TouchableOpacity>
               </TouchableOpacity>
             ) : (
               <SkeletonPlaceholder
