@@ -46,8 +46,8 @@ const Index = () => {
       {/* Main Content */}
       <ScrollView>
         <TrendingMoviesCarousel setLoading={setLoading} />
-        <Movie setLoading={setLoading} />
-        <Shows setLoading={setLoading} />
+        <Movie  />
+        <Shows  />
         <View style={{ height: 70 }} />
       </ScrollView>
     </View>

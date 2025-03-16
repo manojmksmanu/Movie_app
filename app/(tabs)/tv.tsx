@@ -94,7 +94,7 @@ export default function TVSeriesScreen() {
           ? lastPage.nextPage
           : undefined,
       staleTime: 5 * 60 * 1000,
-      cacheTime: 10 * 60 * 1000,
+      gcTime: 10 * 60 * 1000,
       initialPageParam: 1,
     });
 

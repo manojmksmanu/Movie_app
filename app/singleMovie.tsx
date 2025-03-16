@@ -21,6 +21,7 @@ import { Ionicons } from "@expo/vector-icons";
 import MovieCard from "../components/MovieCard";
 import { Movie, CastMember, Video } from "../types/movie";
 import YoutubePlayer from "react-native-youtube-iframe";
+import LottieView from "lottie-react-native";
 
 export default function SingleMovieScreen() {
   const [movie, setMovie] = useState<Movie | null>(null);
@@ -69,12 +70,10 @@ export default function SingleMovieScreen() {
       <YoutubePlayer
         height={280}
         width={360}
-        videoId={item.key} // TMDB video key
-        play={false} // Start paused
+        videoId={item.key} 
+        play={false} 
         initialPlayerParams={{
-          controls: true, // Show YouTube controls
-          modestbranding: 1, // Minimize YouTube branding
-          rel: 0, // Don’t show related videos
+          controls: true,
         }}
       />
       <Text style={styles.videoTitle}>{item.name}</Text>
@@ -88,8 +87,14 @@ export default function SingleMovieScreen() {
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#e21221" />
-        <Text style={styles.loadingText}>Loading Movie Details...</Text>
+        <LottieView
+          source={require("../assets/lottie/Loading.json")}
+          autoPlay
+          loop
+          style={{ width: 200, height: 200 }}
+        />
+
+        <Text style={styles.loadingText}>Loading Details...</Text>
       </View>
     );
   }

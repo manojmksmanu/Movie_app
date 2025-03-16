@@ -11,6 +11,8 @@ export default function ShortlistScreen() {
     (state: RootState) => state.movies.shortlistedMovies
   );
 
+  console.log(shortlistedMovies)
+
   const renderMovie = ({ item }: { item: Movie }) => (
     <MovieCard movie={item} />
   );

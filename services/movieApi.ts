@@ -53,50 +53,92 @@ export const fetchTVSeriesPage = async ({
 
 
 // Fetch movie details
-export const fetchMovieDetails = async (id) => {
+// export const fetchMovieDetails = async (id) => {
+//   try {
+//     const url = `https://api.themoviedb.org/3/movie/${id}?language=en-US`;
+//     const response = await axios.get(url, API_CONFIG);
+//     return response.data;
+//   } catch (error) {
+//     console.error("Error fetching movie details:", error);
+//     return null;
+//   }
+// };
+export const fetchMovieDetails = async (id:any) => {
   try {
-    const url = `https://api.themoviedb.org/3/movie/${id}?language=en-US`;
-    const response = await axios.get(url, API_CONFIG);
+    const movieUrl = `https://api.themoviedb.org/3/movie/${id}?language=en-US`;
+    const response = await axios.get(movieUrl, API_CONFIG);
     return response.data;
-  } catch (error) {
-    console.error("Error fetching movie details:", error);
-    return null;
+  } catch (movieError) {
+    console.warn("Movie API failed, trying TV API...");
+
+    try {
+      const tvUrl = `https://api.themoviedb.org/3/tv/${id}?language=en-US`;
+      const tvResponse = await axios.get(tvUrl, API_CONFIG);
+      return tvResponse.data;
+    } catch (tvError) {
+      console.error("Error fetching movie or TV details:", tvError);
+      return null;
+    }
   }
 };
 
 // Fetch movie cast
-export const fetchMovieCast = async (id) => {
+export const fetchMovieCast = async (id:any) => {
   try {
-    const url = `https://api.themoviedb.org/3/movie/${id}/credits?language=en-US`;
-    const response = await axios.get(url, API_CONFIG);
-    return response.data.cast.slice(0, 10); // Top 10 cast members
-  } catch (error) {
-    console.error("Error fetching cast:", error);
-    return [];
+    const movieCastUrl = `https://api.themoviedb.org/3/movie/${id}/credits?language=en-US`;
+    const response = await axios.get(movieCastUrl, API_CONFIG);
+    return response.data.cast
+  } catch (movieError) {
+    console.warn("Movie cast API failed, trying TV cast API...");
+
+    try {
+      const tvCastUrl = `https://api.themoviedb.org/3/tv/${id}/credits?language=en-US`;
+      const tvResponse = await axios.get(tvCastUrl, API_CONFIG);
+      return tvResponse.data.cast
+    } catch (tvError) {
+      console.error("Error fetching cast details:", tvError);
+      return [];
+    }
   }
 };
 
 // Fetch movie videos (trailers)
-export const fetchMovieVideos = async (id) => {
+export const fetchMovieVideos = async (id:any) => {
   try {
-    const url = `https://api.themoviedb.org/3/movie/${id}/videos?language=en-US`;
-    const response = await axios.get(url, API_CONFIG);
-    return response.data.results.filter((video) => video.site === "YouTube" && video.type === "Trailer");
-  } catch (error) {
-    console.error("Error fetching videos:", error);
-    return [];
+    const movieVideoUrl = `https://api.themoviedb.org/3/movie/${id}/videos?language=en-US`;
+    const response = await axios.get(movieVideoUrl, API_CONFIG);
+    return response.data.results.filter((video:any) => video.site === "YouTube" && video.type === "Trailer");
+  } catch (movieError) {
+    console.warn("Movie video API failed, trying TV video API...");
+
+    try {
+      const tvVideoUrl = `https://api.themoviedb.org/3/tv/${id}/videos?language=en-US`;
+      const tvResponse = await axios.get(tvVideoUrl, API_CONFIG);
+      return tvResponse.data.results.filter((video:any) => video.site === "YouTube" && video.type === "Trailer");
+    } catch (tvError) {
+      console.error("Error fetching video details:", tvError);
+      return [];
+    }
   }
 };
 
 // Fetch movie recommendations
-export const fetchMovieRecommendations = async (id) => {
+export const fetchMovieRecommendations = async (id:any) => {
   try {
-    const url = `https://api.themoviedb.org/3/movie/${id}/recommendations?language=en-US&page=1`;
-    const response = await axios.get(url, API_CONFIG);
+    const movieRecommendationUrl = `https://api.themoviedb.org/3/movie/${id}/recommendations?language=en-US&page=1`;
+    const response = await axios.get(movieRecommendationUrl, API_CONFIG);
     return response.data.results.slice(0, 10); // Top 10 recommendations
-  } catch (error) {
-    console.error("Error fetching recommendations:", error);
-    return [];
+  } catch (movieError) {
+    console.warn("Movie recommendation API failed, trying TV recommendation API...");
+
+    try {
+      const tvRecommendationUrl = `https://api.themoviedb.org/3/tv/${id}/recommendations?language=en-US&page=1`;
+      const tvResponse = await axios.get(tvRecommendationUrl, API_CONFIG);
+      return tvResponse.data.results.slice(0, 10);
+    } catch (tvError) {
+      console.error("Error fetching recommendation details:", tvError);
+      return [];
+    }
   }
 };
 

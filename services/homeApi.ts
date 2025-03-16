@@ -13,13 +13,13 @@ const fetchTrendingMovies = async () => {
   try {
     const url = `https://api.themoviedb.org/3/trending/all/day?language=en-US`;
     const response = await axios.get(url, API_CONFIG);
-    return response.data; // Axios returns data directly
+    return response.data; 
   } catch (error: any) {
     console.error(
       "Error fetching trending movies:",
       error.response?.data || error.message
     );
-    throw error; // React Query ko error pass karenge taaki wo bhi handle kare
+    throw error; 
   }
 };
 
@@ -30,13 +30,13 @@ export const useTrendingMovies = () => {
   });
 };
 
-const fetchTrendingMoviesByDays = async ({ queryKey }) => {
+const fetchTrendingMoviesByDays = async ({ queryKey }: { queryKey: any }) => {
   try {
-    const [, dayWeek] = queryKey; // Query key se `dayWeek` extract karenge
+    const [, dayWeek] = queryKey; 
     const url = `https://api.themoviedb.org/3/trending/movie/${dayWeek}?language=en-US`;
     const response = await axios.get(url, API_CONFIG);
     return response.data.results;
-  } catch (error:any) {
+  } catch (error: any) {
     console.error(
       "Error fetching trending movies:",
       error.response?.data || error.message
@@ -47,28 +47,28 @@ const fetchTrendingMoviesByDays = async ({ queryKey }) => {
 
 export const useTrendingMoviesByDays = (dayWeek:any) => {
   return useQuery({
-    queryKey: ["trendingMoviesByDays", dayWeek], // Query key dynamic hai
+    queryKey: ["trendingMoviesByDays", dayWeek],
     queryFn: fetchTrendingMoviesByDays,
   });
 };
-const fetchTrendingTvByDays = async ({ queryKey }) => {
+const fetchTrendingTvByDays = async ({ queryKey }: { queryKey: any }) => {
   try {
-    const [, dayWeek] = queryKey; // Query key se `dayWeek` extract karenge
+    const [, dayWeek] = queryKey; 
     const url = `https://api.themoviedb.org/3/trending/tv/${dayWeek}?language=en-US`;
     const response = await axios.get(url, API_CONFIG);
     return response.data.results;
-  } catch (error:any) {
+  } catch (error: any) {
     console.error(
       "Error fetching trending movies:",
       error.response?.data || error.message
     );
-    throw error; // React Query error handle karega
+    throw error; 
   }
 };
 
 export const useTrendingTvByDays = (dayWeek:any) => {
   return useQuery({
-    queryKey: ["trendingTvByDays", dayWeek], // Query key dynamic hai
+    queryKey: ["trendingTvByDays", dayWeek],
     queryFn: fetchTrendingTvByDays,
   });
 };
